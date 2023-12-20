@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:themoviedb/widgets/movie_details/movie_details_main_info_widget.dart';
 
 class MovieDetailsWidget extends StatefulWidget {
   final int movieId;
@@ -18,7 +19,9 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
         centerTitle: true,
       ),
       body: ListView(
-        children: [],
+        children: [
+          MovieDetailsMainInfoWidget(),
+        ],
       ),
     );
   }
