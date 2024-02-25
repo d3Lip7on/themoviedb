@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/domain/api_client/api_client.dart';
 
 class AuthModel extends ChangeNotifier {
+  // final _apiClient = ApiClient();
+  //
   final loginTextController = TextEditingController();
   final passwordTextController = TextEditingController();
 
