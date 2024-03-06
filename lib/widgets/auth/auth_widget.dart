@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/Theme/app_button_style.dart';
 import 'package:themoviedb/widgets/auth/auth_model.dart';
-import 'package:themoviedb/widgets/main_screen/main_screen_widget.dart';
+
+import '../../library/widgets/inherited/provider.dart';
 
 class AuthWidget extends StatefulWidget {
   const AuthWidget({super.key});
@@ -78,7 +79,7 @@ class _FormWidget extends StatelessWidget {
   const _FormWidget({super.key});
   @override
   Widget build(BuildContext context) {
-    final model = AuthProvider.get(context)?.model;
+    final model = NotifyProvider.get<AuthModel>(context);
 
     const textStyle = TextStyle(
       fontSize: 16,
@@ -141,7 +142,7 @@ class _ErrorMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final errorMessage = AuthProvider.watch(context)?.model.errorMessage;
+    final errorMessage = NotifyProvider.watch<AuthModel>(context)?.errorMessage;
     if (errorMessage == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -159,9 +160,17 @@ class _AuthButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const color = Color(0xFF01B4E4);
-    final model = AuthProvider.watch(context)?.model;
+    final model = NotifyProvider.watch<AuthModel>(context);
     final onPressed =
         model?.canStartAuth == true ? () => model?.auth(context) : null;
+    final child = model?.isAuthProgress == true
+        ? const SizedBox(
+            width: 15,
+            height: 15,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ))
+        : const Text('Login');
 
     return ElevatedButton(
         onPressed: onPressed,
@@ -179,6 +188,6 @@ class _AuthButton extends StatelessWidget {
             ),
             padding: MaterialStateProperty.all(
                 const EdgeInsets.symmetric(horizontal: 15, vertical: 8))),
-        child: const Text('Login'));
+        child: child);
   }
 }

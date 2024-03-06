@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/domain/api_client/api_client.dart';
+import 'package:themoviedb/domain/api_client/data_providers/session_data_provider.dart';
+import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
 class AuthModel extends ChangeNotifier {
-  // final _apiClient = ApiClient();
-  //
+  final _apiClient = ApiClient();
+  final _sessionDataProvider = SessionDataProvider();
+
   final loginTextController = TextEditingController();
   final passwordTextController = TextEditingController();
 
@@ -12,25 +15,42 @@ class AuthModel extends ChangeNotifier {
 
   bool _isAuthProgress = false;
   bool get canStartAuth => !_isAuthProgress;
+  bool get isAuthProgress => _isAuthProgress;
 
-  Future<void> auth(BuildContext context) async {}
-}
+  Future<void> auth(BuildContext context) async {
+    final login = loginTextController.text;
+    final password = passwordTextController.text;
 
-class AuthProvider extends InheritedNotifier {
-  final AuthModel model;
-  const AuthProvider({
-    super.key,
-    required Widget child,
-    required this.model,
-  }) : super(child: child, notifier: model);
+    if (login.isEmpty || password.isEmpty) {
+      _errorMessage = 'Fill in login and password';
+      notifyListeners();
+      return;
+    }
+    _errorMessage = null;
+    _isAuthProgress = true;
+    notifyListeners();
 
-  static AuthProvider? watch(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<AuthProvider>();
-  }
+    String? sessionId;
+    try {
+      sessionId = await _apiClient.auth(username: login, password: password);
+    } catch (e) {
+      _errorMessage = 'Invalid login or password';
+    }
 
-  static AuthProvider? get(BuildContext context) {
-    final widget =
-        context.getElementForInheritedWidgetOfExactType<AuthProvider>()?.widget;
-    return widget is AuthProvider ? widget : null;
+    _isAuthProgress = false;
+
+    if (_errorMessage != null) {
+      notifyListeners();
+      return;
+    }
+
+    if (sessionId == null) {
+      _errorMessage = 'Unknown error, try again';
+      notifyListeners();
+      return;
+    }
+    await _sessionDataProvider.setSessionId(sessionId);
+    Navigator.of(context)
+        .pushReplacementNamed(MainNavigationRoutesNames.mainScreen);
   }
 }
