@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/resources/images.dart';
-import 'package:themoviedb/Theme/app_colors.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
+import '../../Theme/app_colors.dart';
 
 class Movie {
   final int id;

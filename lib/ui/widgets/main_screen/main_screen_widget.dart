@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/domain/api_client/data_providers/session_data_provider.dart';
 import 'package:themoviedb/library/widgets/inherited/provider.dart';
-import 'package:themoviedb/widgets/main_screen/main_screen_model.dart';
-import 'package:themoviedb/widgets/movie_list/movie_list_widget.dart';
+import 'package:themoviedb/ui/navigation/main_navigation.dart';
+
+import '../movie_list/movie_list_widget.dart';
+import 'main_screen_model.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({super.key});
@@ -12,7 +14,7 @@ class MainScreenWidget extends StatefulWidget {
 }
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
-  int _selectedTab = 0;
+  int _selectedTab = 1;
 
   void onSelectTab(int index) {
     if (_selectedTab == index) return;
@@ -30,8 +32,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         centerTitle: true,
         actions: [
           IconButton(
-              onPressed: () {
-                SessionDataProvider().setSessionId(null);
+              onPressed: () async {
+                await SessionDataProvider().setSessionId(null);
+                Navigator.of(context)
+                    .pushReplacementNamed(MainNavigationRoutesNames.auth);
               },
               icon: Icon(Icons.logout))
         ],

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
-import 'package:themoviedb/Theme/app_colors.dart';
-import 'package:themoviedb/widgets/app/my_app_model.dart';
+
+import '../../Theme/app_colors.dart';
+import 'my_app_model.dart';
 
 class MyApp extends StatelessWidget {
   final MyAppModel model;

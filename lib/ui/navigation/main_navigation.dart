@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:themoviedb/widgets/auth/auth_model.dart';
-import 'package:themoviedb/widgets/auth/auth_widget.dart';
-import 'package:themoviedb/widgets/main_screen/main_screen_model.dart';
-import 'package:themoviedb/widgets/movie_details/movie_details_widget.dart';
 
 import '../../library/widgets/inherited/provider.dart';
-import '../../widgets/main_screen/main_screen_widget.dart';
+import '../widgets/auth/auth_model.dart';
+import '../widgets/auth/auth_widget.dart';
+import '../widgets/main_screen/main_screen_model.dart';
+import '../widgets/main_screen/main_screen_widget.dart';
+import '../widgets/movie_details/movie_details_widget.dart';
 
 abstract class MainNavigationRoutesNames {
   static const auth = 'auth';
