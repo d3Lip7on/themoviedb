@@ -128,12 +128,13 @@ class ApiClient {
     return sessionId;
   }
 
-  Future<PopularMovieResponse> getPopularMovies() async {
+  Future<PopularMovieResponse> getPopularMovies(
+      {String page = "1", String language = 'ru-RU'}) async {
     const path = '/movie/popular';
     final urlParameters = <String, dynamic>{
       "api_key": _apiKey,
-      "page": 1,
-      "language": "ru-RU",
+      "page": page,
+      "language": language,
     };
     parser(json) {
       final jsonMap = json as Map<String, dynamic>;
