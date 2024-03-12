@@ -1,6 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:themoviedb/domain/entities/popular_movie_response.dart';
+
+enum ApiClientExceptionType { Network, Auth, Other }
+
+class ApiClientException implements Exception {
+  final ApiClientExceptionType type;
+  ApiClientException({required this.type});
+}
+
 class ApiClient {
   final _client = HttpClient();
 
@@ -10,10 +19,10 @@ class ApiClient {
 
   Future<String> auth(
       {required String username, required String password}) async {
-    final token = await makeToken();
-    final validToken = await validateUser(
+    final token = await _makeToken();
+    final validToken = await _validateUser(
         username: username, password: password, requestToken: token);
-    final sessionId = await makeSession(requestToken: validToken);
+    final sessionId = await _makeSession(requestToken: validToken);
     return sessionId;
   }
 
@@ -26,46 +35,124 @@ class ApiClient {
     }
   }
 
-  Future<String> makeToken() async {
-    final url = _makeUri('/authentication/token/new', {"api_key": _apiKey});
-    final request = await _client.getUrl(url);
-    final response = await request.close();
-    final json = (await response.jsonDecode()) as Map<String, dynamic>;
-    final token = json['request_token'] as String;
-    return token;
+  Future<T> _get<T>(String path, T Function(dynamic json) parser,
+      [Map<String, dynamic>? parameters]) async {
+    final url = _makeUri(path, parameters);
+    try {
+      final request = await _client.getUrl(url);
+      final response = await request.close();
+      final dynamic json = (await response.jsonDecode());
+      _validateResponse(response, json);
+      final result = parser(json);
+      return result;
+    } on SocketException {
+      throw ApiClientException(type: ApiClientExceptionType.Network);
+    } on ApiClientException {
+      rethrow;
+    } catch (e) {
+      throw ApiClientException(type: ApiClientExceptionType.Other);
+    }
   }
 
-  Future<String> validateUser(
+  Future<T> _post<T>(String path, T Function(dynamic json) parser,
+      {Map<String, dynamic>? urlParameters,
+      Map<String, dynamic>? bodyParameters}) async {
+    final url = _makeUri(path, urlParameters);
+    try {
+      final request = await _client.postUrl(url);
+      request.headers.contentType = ContentType.json;
+      request.write(jsonEncode(bodyParameters));
+      final response = await request.close();
+      final dynamic json = (await response.jsonDecode());
+      _validateResponse(response, json);
+      final result = parser(json);
+      return result;
+    } on SocketException {
+      throw ApiClientException(type: ApiClientExceptionType.Network);
+    } on ApiClientException {
+      rethrow;
+    } catch (e) {
+      throw ApiClientException(type: ApiClientExceptionType.Other);
+    }
+  }
+
+  Future<String> _makeToken() async {
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final token = jsonMap['request_token'] as String;
+      return token;
+    }
+
+    const path = '/authentication/token/new';
+    return _get(path, parser, <String, dynamic>{"api_key": _apiKey});
+  }
+
+  Future<String> _validateUser(
       {required String username,
       required String password,
       required String requestToken}) async {
-    final url = _makeUri(
-        '/authentication/token/validate_with_login', {"api_key": _apiKey});
-    final parameters = <String, dynamic>{
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final token = jsonMap['request_token'] as String;
+      return token;
+    }
+
+    const path = '/authentication/token/validate_with_login';
+    final urlParameters = {"api_key": _apiKey};
+    final bodyParameters = <String, dynamic>{
       'username': username,
       'password': password,
       'request_token': requestToken,
     };
-    final request = await _client.postUrl(url);
-    request.headers.contentType = ContentType.json;
-    request.write(jsonEncode(parameters));
-    final response = await request.close();
-    final json = (await response.jsonDecode()) as Map<String, dynamic>;
-    final token = json['request_token'] as String;
+    final token = await _post(
+      path,
+      parser,
+      urlParameters: urlParameters,
+      bodyParameters: bodyParameters,
+    );
     return token;
   }
 
-  Future<String> makeSession({required String requestToken}) async {
-    final url =
-        _makeUri('/authentication/session/new?api_key=', {"api_key": _apiKey});
-    final parameters = <String, dynamic>{"request_token": requestToken};
-    final request = await _client.postUrl(url);
-    request.headers.contentType = ContentType.json;
-    request.write(jsonEncode(parameters));
-    final response = await request.close();
-    final json = (await response.jsonDecode()) as Map<String, dynamic>;
-    final sessionId = json['session_id'] as String;
+  Future<String> _makeSession({required String requestToken}) async {
+    const path = '/authentication/session/new?api_key=';
+    final urlParameters = {"api_key": _apiKey};
+    final bodyParameters = <String, dynamic>{"request_token": requestToken};
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final sessionId = jsonMap['session_id'] as String;
+      return sessionId;
+    }
+
+    final sessionId = await _post(path, parser,
+        urlParameters: urlParameters, bodyParameters: bodyParameters);
     return sessionId;
+  }
+
+  Future<PopularMovieResponse> getPopularMovies() async {
+    const path = '/movie/popular';
+    final urlParameters = <String, dynamic>{
+      "api_key": _apiKey,
+      "page": 1,
+      "language": "ru-RU",
+    };
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final result = PopularMovieResponse.fromJson(jsonMap);
+      return result;
+    }
+
+    final result = await _get(path, parser, urlParameters);
+    return result;
+  }
+
+  void _validateResponse(HttpClientResponse response, dynamic json) {
+    if (response.statusCode == 401) {
+      final apiStatusCode = json['status_code'] as int;
+      if (apiStatusCode == 30) {
+        throw ApiClientException(type: ApiClientExceptionType.Auth);
+      }
+      throw ApiClientException(type: ApiClientExceptionType.Other);
+    }
   }
 }
 

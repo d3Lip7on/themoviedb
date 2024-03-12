@@ -33,8 +33,22 @@ class AuthModel extends ChangeNotifier {
     String? sessionId;
     try {
       sessionId = await _apiClient.auth(username: login, password: password);
+    } on ApiClientException catch (e) {
+      switch (e.type) {
+        case ApiClientExceptionType.Network:
+          _errorMessage = 'Some problems with network. Please check your '
+              'connection and try again';
+          break;
+        case ApiClientExceptionType.Auth:
+          _errorMessage = 'Invalid login or password';
+          break;
+        case ApiClientExceptionType.Other:
+          _errorMessage = 'Something bad happened. Try again later';
+        default:
+          break;
+      }
     } catch (e) {
-      _errorMessage = 'Invalid login or password';
+      _errorMessage = 'Something bad happened. Try again later';
     }
 
     _isAuthProgress = false;
