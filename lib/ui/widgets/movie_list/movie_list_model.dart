@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:themoviedb/domain/api_client/api_client.dart';
 import 'package:themoviedb/domain/entities/movie.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
@@ -19,6 +20,20 @@ class MovieListModel extends ChangeNotifier {
     final id = _movies[index].id;
     Navigator.of(context)
         .pushNamed(MainNavigationRoutesNames.movieDetails, arguments: id);
+  }
+
+  String dateFormatter(Movie movie) {
+    final date = movie.releaseDate;
+    if (date == null) return '';
+    final year = date.year.toString();
+    final month = _numberZeroingFormatter(date.month);
+    final day = _numberZeroingFormatter(date.day);
+    return "$year-$month-$day";
+  }
+
+  String _numberZeroingFormatter(int num) {
+    if (num < 10) return '0$num';
+    return num.toString();
   }
 }
 

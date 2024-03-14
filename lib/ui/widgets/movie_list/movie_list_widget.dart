@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/domain/api_client/api_client.dart';
 import 'package:themoviedb/resources/images.dart';
 import 'package:themoviedb/ui/navigation/main_navigation.dart';
 import 'package:themoviedb/ui/widgets/movie_list/movie_list_model.dart';
@@ -20,6 +21,7 @@ class MovieListWidget extends StatelessWidget {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             itemBuilder: (BuildContext context, int index) {
               final movie = model.movies[index];
+              final posterPath = movie.posterPath;
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -41,6 +43,10 @@ class MovieListWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Image(width: 94, height: 141, image: movie.imageName),
+                        Image.network(
+                          ApiClient.imageUrl(posterPath),
+                          width: 95,
+                        ),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -63,7 +69,7 @@ class MovieListWidget extends StatelessWidget {
                                   height: 5,
                                 ),
                                 Text(
-                                  movie.releaseDate.toString() ?? "ERROR",
+                                  model.dateFormatter(movie),
                                   style: const TextStyle(
                                       fontSize: 12, color: Colors.grey),
                                 ),
