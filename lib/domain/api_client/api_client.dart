@@ -131,11 +131,11 @@ class ApiClient {
   }
 
   Future<PopularMovieResponse> getPopularMovies(
-      {String page = "1", String language = 'ru-RU'}) async {
+      {int page = 1, String language = 'ru-RU'}) async {
     const path = '/movie/popular';
     final urlParameters = <String, dynamic>{
       "api_key": _apiKey,
-      "page": page,
+      "page": page.toString(),
       "language": language,
     };
     parser(json) {
@@ -145,6 +145,25 @@ class ApiClient {
     }
 
     final result = await _get(path, parser, urlParameters);
+    return result;
+  }
+
+  Future<PopularMovieResponse> getMoviesByQuery(
+      {required String query, int page = 1, String language = 'en-US'}) async {
+    const path = '/search/movie';
+    final queryParameters = <String, dynamic>{
+      "api_key": _apiKey,
+      "query": query,
+      "page": page.toString(),
+      "language": language
+    };
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final result = PopularMovieResponse.fromJson(jsonMap);
+      return result;
+    }
+
+    final result = await _get(path, parser, queryParameters);
     return result;
   }
 

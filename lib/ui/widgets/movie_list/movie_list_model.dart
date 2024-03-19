@@ -6,14 +6,49 @@ import 'package:themoviedb/ui/navigation/main_navigation.dart';
 
 class MovieListModel extends ChangeNotifier {
   final _apiClient = ApiClient();
-  var _movies = <Movie>[];
+  final _movies = <Movie>[];
+  late int _currentPage;
+  late int _totalPages;
+  bool _isLoadingInProgress = false;
+  final textEditingController = TextEditingController();
+  final scrollController = ScrollController();
+  bool isInSearch = false;
 
   List<Movie> get movies => List.unmodifiable(_movies);
 
-  Future<void> loadMovies() async {
-    final moviesResponse = (await _apiClient.getPopularMovies()).movies;
-    _movies.addAll(moviesResponse);
-    notifyListeners();
+  late String _locale;
+
+  void setupLocale(BuildContext context) {
+    _locale = Localizations.localeOf(context).toLanguageTag();
+    _movies.clear();
+    _currentPage = 0;
+    _totalPages = 1;
+    _loadMovies();
+  }
+
+  Future<void> _loadMovies() async {
+    if (_isLoadingInProgress || _totalPages <= _currentPage) return;
+    _isLoadingInProgress = true;
+    final nextPage = _currentPage + 1;
+    late final moviesResponse;
+    try {
+      if (isInSearch) {
+        final query = textEditingController.value.text;
+        moviesResponse = await _apiClient.getMoviesByQuery(
+            query: query, language: _locale, page: nextPage);
+      } else {
+        moviesResponse = (await _apiClient.getPopularMovies(
+            language: _locale, page: nextPage));
+      }
+
+      _currentPage = moviesResponse.page;
+      _totalPages = moviesResponse.totalPages;
+      _movies.addAll(moviesResponse.movies);
+      _isLoadingInProgress = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoadingInProgress = false;
+    }
   }
 
   void onMovieTap(BuildContext context, int index) {
@@ -34,6 +69,32 @@ class MovieListModel extends ChangeNotifier {
   String _numberZeroingFormatter(int num) {
     if (num < 10) return '0$num';
     return num.toString();
+  }
+
+  void showedMovieOnIndex(int index) {
+    if (index < _movies.length - 3) return;
+    _loadMovies();
+  }
+
+  Future<void> moveToFirstElement() {
+    return scrollController.animateTo(0.0,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  Future<void> onChanged(String text, BuildContext context) async {
+    moveToFirstElement().whenComplete(() {
+      print('Finished moving');
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!scrollController.position.isScrollingNotifier.value) {
+        if (text.isEmpty) {
+          isInSearch = false;
+        } else {
+          isInSearch = true;
+        }
+        setupLocale(context);
+      }
+    });
   }
 }
 

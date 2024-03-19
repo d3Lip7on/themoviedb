@@ -19,7 +19,10 @@ class MovieListWidget extends StatelessWidget {
             padding: const EdgeInsets.only(top: 70),
             itemCount: model.movies.length ?? 0,
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            controller: model.scrollController,
             itemBuilder: (BuildContext context, int index) {
+              model.showedMovieOnIndex(index);
+              // if (index >= model.movies.length) return null;
               final movie = model.movies[index];
               final posterPath = movie.posterPath;
               return Padding(
@@ -43,10 +46,14 @@ class MovieListWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Image(width: 94, height: 141, image: movie.imageName),
-                        Image.network(
-                          ApiClient.imageUrl(posterPath),
-                          width: 95,
-                        ),
+                        (posterPath != null)
+                            ? Image.network(
+                                ApiClient.imageUrl(posterPath),
+                                width: 95,
+                              )
+                            : const SizedBox(
+                                width: 95,
+                              ),
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -101,6 +108,10 @@ class MovieListWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: TextField(
+            controller: model.textEditingController,
+            onChanged: (text) async {
+              await model.onChanged(text, context);
+            },
             decoration: InputDecoration(
               label: const Text('Search'),
               border: OutlineInputBorder(

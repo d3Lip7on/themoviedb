@@ -5,14 +5,14 @@ part 'movie.g.dart';
 @JsonSerializable(fieldRename: FieldRename.snake)
 class Movie {
   final bool adult;
-  final String backdropPath;
+  final String? backdropPath;
   final List<int> genreIds;
   final int id;
   final String originalLanguage;
   final String originalTitle;
   final String overview;
   final double popularity;
-  final String posterPath;
+  final String? posterPath;
   @JsonKey(fromJson: _parseDateFromString)
   final DateTime? releaseDate;
   final String title;
