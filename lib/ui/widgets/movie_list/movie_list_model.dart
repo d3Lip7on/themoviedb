@@ -82,9 +82,7 @@ class MovieListModel extends ChangeNotifier {
   }
 
   Future<void> onChanged(String text, BuildContext context) async {
-    moveToFirstElement().whenComplete(() {
-      print('Finished moving');
-    });
+    moveToFirstElement();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!scrollController.position.isScrollingNotifier.value) {
         if (text.isEmpty) {

@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:themoviedb/domain/entities/popular_movie_response.dart';
 
+import '../entities/movie_details_response.dart';
+
 enum ApiClientExceptionType { Network, Auth, Other }
 
 class ApiClientException implements Exception {
@@ -155,7 +157,8 @@ class ApiClient {
       "api_key": _apiKey,
       "query": query,
       "page": page.toString(),
-      "language": language
+      "language": language,
+      "include_adult": true.toString(),
     };
     parser(json) {
       final jsonMap = json as Map<String, dynamic>;
@@ -175,6 +178,21 @@ class ApiClient {
       }
       throw ApiClientException(type: ApiClientExceptionType.Other);
     }
+  }
+
+  Future<MovieDetailsResponse> getMovieDetails(int index) {
+    final urlParameters = <String, dynamic>{
+      "api_key": _apiKey,
+    };
+    final path = '/movie/$index';
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final result = MovieDetailsResponse.fromJson(jsonMap);
+      return result;
+    }
+
+    final result = _get(path, parser, urlParameters);
+    return result;
   }
 }
 

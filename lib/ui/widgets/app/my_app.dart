@@ -37,15 +37,7 @@ class MyApp extends StatelessWidget {
       ],
       routes: mainNavigation.routes,
       initialRoute: mainNavigation.initialRoute(model.isAuth),
-      onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute<void>(builder: (context) {
-          return const Scaffold(
-            body: Center(
-              child: Text('Navigation error'),
-            ),
-          );
-        });
-      },
+      onGenerateRoute: mainNavigation.onGenerateRoute,
     );
   }
 }

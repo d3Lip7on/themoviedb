@@ -1,18 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:themoviedb/library/widgets/inherited/provider.dart';
+import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 import 'movie_details_main_info_widget.dart';
 import 'movie_details_main_screen_cast_widget.dart';
 
-class MovieDetailsWidget extends StatefulWidget {
+class MovieDetailsWidget extends StatelessWidget {
   final int movieId;
   const MovieDetailsWidget({super.key, required this.movieId});
 
-  @override
-  State<MovieDetailsWidget> createState() => _MovieDetailsWidgetState();
-}
-
-class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

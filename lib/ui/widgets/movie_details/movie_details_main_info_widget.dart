@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/resources/images.dart';
 
+import '../../../library/widgets/inherited/provider.dart';
+import 'movie_details_model.dart';
+
 class MovieDetailsMainInfoWidget extends StatelessWidget {
   const MovieDetailsMainInfoWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final model = context.dependOnInheritedWidgetOfExactType<
+        NotifyProvider<MovieDetailsModel>>();
     return Container(
       color: const Color.fromRGBO(66, 20, 20, 1.0),
       child: const Column(

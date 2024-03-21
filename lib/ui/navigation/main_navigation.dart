@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 import '../../library/widgets/inherited/provider.dart';
 import '../widgets/auth/auth_model.dart';
@@ -29,8 +30,11 @@ class MainNavigation {
         final arguments = settings.arguments;
         final movieId = arguments is int ? arguments : 0;
         return MaterialPageRoute(
-            builder: (context) => MovieDetailsWidget(
-                  movieId: movieId,
+            builder: (context) => NotifyProvider(
+                  model: MovieDetailsModel(movieId: movieId),
+                  child: MovieDetailsWidget(
+                    movieId: movieId,
+                  ),
                 ));
       default:
         const widget = Text('Navigation error');
