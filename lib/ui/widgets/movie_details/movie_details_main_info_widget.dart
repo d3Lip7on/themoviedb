@@ -5,31 +5,42 @@ import '../../../library/widgets/inherited/provider.dart';
 import 'movie_details_model.dart';
 
 class MovieDetailsMainInfoWidget extends StatelessWidget {
-  const MovieDetailsMainInfoWidget({super.key});
+  final MovieDetailsModel model;
+  const MovieDetailsMainInfoWidget({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
-    final model = context.dependOnInheritedWidgetOfExactType<
-        NotifyProvider<MovieDetailsModel>>();
     return Container(
       color: const Color.fromRGBO(66, 20, 20, 1.0),
-      child: const Column(
+      child: Column(
         children: [
-          _TopPosterWidget(),
-          SizedBox(
+          _TopPosterWidget(
+            model: model,
+          ),
+          const SizedBox(
             height: 20,
           ),
-          _MovieTitleWidget(),
-          SizedBox(
+          _MovieTitleWidget(
+            model: model,
+          ),
+          const SizedBox(
             height: 20,
           ),
-          _MovieButtonRow(),
-          SizedBox(
+          _MovieButtonRow(
+            model: model,
+          ),
+          const SizedBox(
             height: 20,
           ),
-          _MovieInfo(),
-          _MovieOverview(),
-          _PeopleWidget(),
+          _MovieInfo(
+            model: model,
+          ),
+          _MovieOverview(
+            model: model,
+          ),
+          _PeopleWidget(
+            model: model,
+          ),
         ],
       ),
     );
@@ -37,7 +48,8 @@ class MovieDetailsMainInfoWidget extends StatelessWidget {
 }
 
 class _TopPosterWidget extends StatelessWidget {
-  const _TopPosterWidget({super.key});
+  final MovieDetailsModel model;
+  const _TopPosterWidget({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -57,24 +69,32 @@ class _TopPosterWidget extends StatelessWidget {
 }
 
 class _MovieTitleWidget extends StatelessWidget {
-  const _MovieTitleWidget({super.key});
+  final MovieDetailsModel model;
+  const _MovieTitleWidget({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    final movie = model.movieDetailsResponse;
+    final title = movie?.title ?? '';
+    final releaseDateYear = '(${movie?.releaseDate?.year})' ?? '0';
+
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Убийцы Цветочной Луны ',
-          style: TextStyle(
+          title,
+          style: const TextStyle(
             fontSize: 20,
             color: Colors.white,
             fontWeight: FontWeight.w700,
           ),
         ),
+        const SizedBox(
+          width: 5,
+        ),
         Text(
-          '(2023)',
-          style: TextStyle(
+          releaseDateYear,
+          style: const TextStyle(
             fontSize: 15,
             color: Color.fromRGBO(180, 180, 180, 1.0),
           ),
@@ -85,7 +105,8 @@ class _MovieTitleWidget extends StatelessWidget {
 }
 
 class _MovieButtonRow extends StatelessWidget {
-  const _MovieButtonRow({super.key});
+  final MovieDetailsModel model;
+  const _MovieButtonRow({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -147,10 +168,14 @@ class _MovieButtonRowDivider extends StatelessWidget {
 }
 
 class _MovieInfo extends StatelessWidget {
-  const _MovieInfo({super.key});
+  final MovieDetailsModel model;
+  const _MovieInfo({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
+    final movie = model.movieDetailsResponse;
+    final releaseDate = model.dateFormatter(movie?.releaseDate);
+    final runtime = movie?.runtime;
     const mainTextStyle = TextStyle(
       color: Colors.white,
       fontSize: 14,
@@ -182,8 +207,8 @@ class _MovieInfo extends StatelessWidget {
               const SizedBox(
                 width: 8,
               ),
-              const Text(
-                '20/10/2023 (PL)',
+              Text(
+                releaseDate,
                 style: mainTextStyle,
               ),
               const SizedBox(
@@ -197,8 +222,8 @@ class _MovieInfo extends StatelessWidget {
               const SizedBox(
                 width: 8,
               ),
-              const Text(
-                '3h 26m',
+              Text(
+                model.runtimeFormatter(runtime),
                 style: mainTextStyle,
               ),
             ],
@@ -214,7 +239,8 @@ class _MovieInfo extends StatelessWidget {
 }
 
 class _MovieOverview extends StatelessWidget {
-  const _MovieOverview({super.key});
+  final MovieDetailsModel model;
+  const _MovieOverview({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +294,8 @@ class _MovieOverview extends StatelessWidget {
 }
 
 class _PeopleWidget extends StatelessWidget {
-  const _PeopleWidget({super.key});
+  final MovieDetailsModel model;
+  const _PeopleWidget({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {

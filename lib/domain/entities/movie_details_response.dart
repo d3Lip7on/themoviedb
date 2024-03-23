@@ -10,7 +10,7 @@ part 'movie_details_response.g.dart';
 class MovieDetailsResponse {
   final bool adult;
   final String? backdropPath;
-  final String? belongsToCollection;
+  // final String? belongsToCollection;
   final int budget;
   final List<Genre> genres;
   final String? homepage;
@@ -23,7 +23,7 @@ class MovieDetailsResponse {
   final String? posterPath;
   final List<ProductionCompany> productionCompanies;
   final List<ProductionCountry> productionCountries;
-  final String? releaseDate;
+  final DateTime? releaseDate;
   final int revenue;
   final int runtime;
   final List<SpokenLanguage> spokenLanguages;
@@ -48,7 +48,7 @@ class MovieDetailsResponse {
       required this.originalLanguage,
       required this.backdropPath,
       required this.adult,
-      required this.belongsToCollection,
+      // required this.belongsToCollection,
       required this.budget,
       required this.genres,
       required this.homepage,

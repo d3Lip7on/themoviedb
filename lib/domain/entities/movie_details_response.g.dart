@@ -11,7 +11,9 @@ MovieDetailsResponse _$MovieDetailsResponseFromJson(
     MovieDetailsResponse(
       id: json['id'] as int,
       posterPath: json['poster_path'] as String?,
-      releaseDate: json['release_date'] as String?,
+      releaseDate: json['release_date'] == null
+          ? null
+          : DateTime.parse(json['release_date'] as String),
       overview: json['overview'] as String,
       title: json['title'] as String,
       voteCount: json['vote_count'] as int,
@@ -22,7 +24,6 @@ MovieDetailsResponse _$MovieDetailsResponseFromJson(
       originalLanguage: json['original_language'] as String,
       backdropPath: json['backdrop_path'] as String?,
       adult: json['adult'] as bool,
-      belongsToCollection: json['belongs_to_collection'] as String?,
       budget: json['budget'] as int,
       genres: (json['genres'] as List<dynamic>)
           .map((e) => Genre.fromJson(e as Map<String, dynamic>))
@@ -49,7 +50,6 @@ Map<String, dynamic> _$MovieDetailsResponseToJson(
     <String, dynamic>{
       'adult': instance.adult,
       'backdrop_path': instance.backdropPath,
-      'belongs_to_collection': instance.belongsToCollection,
       'budget': instance.budget,
       'genres': instance.genres.map((e) => e.toJson()).toList(),
       'homepage': instance.homepage,
@@ -64,7 +64,7 @@ Map<String, dynamic> _$MovieDetailsResponseToJson(
           instance.productionCompanies.map((e) => e.toJson()).toList(),
       'production_countries':
           instance.productionCountries.map((e) => e.toJson()).toList(),
-      'release_date': instance.releaseDate,
+      'release_date': instance.releaseDate?.toIso8601String(),
       'revenue': instance.revenue,
       'runtime': instance.runtime,
       'spoken_languages':
