@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:themoviedb/domain/entities/popular_movie_response.dart';
 
+import '../entities/movie_details_credits.dart';
 import '../entities/movie_details_response.dart';
 
 enum ApiClientExceptionType { Network, Auth, Other }
@@ -192,6 +193,21 @@ class ApiClient {
     }
 
     final result = _get(path, parser, urlParameters);
+    return result;
+  }
+
+  Future<MovieDetailsCredits> getMovieCredits(int movieId) async {
+    final path = '/movie/$movieId/credits';
+    final queryParameters = <String, dynamic>{
+      'api_key': _apiKey,
+    };
+    parser(json) {
+      final jsonMap = json as Map<String, dynamic>;
+      final result = MovieDetailsCredits.fromJson(jsonMap);
+      return result;
+    }
+
+    final result = await _get(path, parser, queryParameters);
     return result;
   }
 }

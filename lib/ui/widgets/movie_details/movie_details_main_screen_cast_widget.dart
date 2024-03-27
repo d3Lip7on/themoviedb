@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:themoviedb/resources/images.dart';
+import 'package:themoviedb/ui/widgets/movie_details/movie_details_model.dart';
 
 class MovieDetailsMainScreenCastWidget extends StatelessWidget {
-  const MovieDetailsMainScreenCastWidget({super.key});
+  final MovieDetailsModel model;
+  const MovieDetailsMainScreenCastWidget({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class MovieDetailsMainScreenCastWidget extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemCount: 10,
                   separatorBuilder: (BuildContext context, int index) =>
-                      SizedBox(
+                      const SizedBox(
                     width: 16,
                   ),
                   itemBuilder: (BuildContext context, int index) =>

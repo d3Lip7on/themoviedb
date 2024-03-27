@@ -30,30 +30,35 @@ class _MovieDetailsWidgetState extends State<MovieDetailsWidget> {
         .dependOnInheritedWidgetOfExactType<NotifyProvider<MovieDetailsModel>>()
         ?.model;
     if (model == null) return const Placeholder();
+    late final body;
     if (model.movieDetailsResponse == null) {
-      return const Center(
+      body = const Center(
         child: SizedBox(
-            width: 15,
-            height: 15,
+            width: 30,
+            height: 30,
             child: CircularProgressIndicator(
-              strokeWidth: 2,
+              strokeWidth: 4,
             )),
       );
+    } else {
+      body = ListView(
+        children: [
+          MovieDetailsMainInfoWidget(
+            model: model,
+          ),
+          MovieDetailsMainScreenCastWidget(
+            model: model,
+          )
+        ],
+      );
     }
-    final title = model.movieDetailsResponse?.title ?? 'The film';
+    final title = model.movieDetailsResponse?.title ?? 'Loading';
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
         centerTitle: true,
       ),
-      body: ListView(
-        children: [
-          MovieDetailsMainInfoWidget(
-            model: model,
-          ),
-          MovieDetailsMainScreenCastWidget()
-        ],
-      ),
+      body: body,
     );
   }
 }

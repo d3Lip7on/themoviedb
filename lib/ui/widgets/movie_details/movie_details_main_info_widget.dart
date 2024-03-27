@@ -53,16 +53,25 @@ class _TopPosterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Stack(
+    bool isLoaded;
+    if (model.movieDetailsResponse == null) {
+      isLoaded = false;
+    } else {
+      isLoaded = true;
+    }
+    return Stack(
       children: [
-        Image(image: Images.backgroundImage),
+        isLoaded ? Image.network(model.createBackdropPath()) : Container(),
         Positioned(
-            top: 20,
-            left: 20,
-            child: Image(
-              width: 94,
-              image: Images.image,
-            )),
+          top: 20,
+          left: 20,
+          child: isLoaded
+              ? Image.network(
+                  model.createPosterPath(),
+                  width: 94,
+                )
+              : Container(),
+        ),
       ],
     );
   }
@@ -228,8 +237,8 @@ class _MovieInfo extends StatelessWidget {
               ),
             ],
           ),
-          const Text(
-            'криминал, драма, история',
+          Text(
+            model.genresToString(),
             style: mainTextStyle,
           ),
         ],
@@ -244,27 +253,29 @@ class _MovieOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tagline = model.movieDetailsResponse?.tagline ?? '';
+    final overview = model.movieDetailsResponse?.overview ?? '';
     const mainTextStyle = TextStyle(
       color: Colors.white,
       fontSize: 14,
     );
-    return const Padding(
-      padding: EdgeInsets.all(15),
+    return Padding(
+      padding: const EdgeInsets.all(15),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Greed is an animal that hungers for blood.',
-            style: TextStyle(
+            tagline,
+            style: const TextStyle(
               color: Colors.grey,
               fontSize: 16,
               fontStyle: FontStyle.italic,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Text(
+          const Text(
             'Обзор',
             style: TextStyle(
               color: Colors.white,
@@ -272,21 +283,10 @@ class _MovieOverview extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Text(
-              'Вскоре после Первой мировой Эрнест Беркхарт, отслуживший во '
-              'Франции поваром, приезжает искать удачи в Оклахому, где '
-              'находится крупная резервация индейцев племени осейдж. В '
-              'тех краях живет его дядя Уильям Хэйл, который носит '
-              'прозвище Король — он землевладелец, скотопромышленник, '
-              'друг индейцев и большой человек. Король убеждает Эрнеста '
-              'посвататься к Молли Кайл, молодой женщине из зажиточной '
-              'индейской семьи. Идея состоит в том, чтобы земельные права'
-              ' этой семьи со временем перешли к Беркхарту (читай к '
-              'Хэйлу), а для этого всего лишь должны умереть мама Молли, её сёстры и она сама.',
-              style: mainTextStyle)
+          Text(overview, style: mainTextStyle)
         ],
       ),
     );
@@ -308,65 +308,67 @@ class _PeopleWidget extends StatelessWidget {
       fontSize: 16,
       fontWeight: FontWeight.w700,
     );
-    return const Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Martin Scorsese',
-                      style: peopleTextStyle,
-                    ),
-                    Text(
-                      'Director, Screenplay',
-                      style: subtitleTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'David Grann',
-                      style: peopleTextStyle,
-                    ),
-                    Text(
-                      'Novel',
-                      style: subtitleTextStyle,
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Row(
-            children: [
-              Column(
-                children: [
-                  Text(
-                    'Eric Roth',
-                    style: peopleTextStyle,
-                  ),
-                  Text(
-                    'Screenplay',
-                    style: subtitleTextStyle,
-                  ),
-                ],
-              )
-            ],
-          )
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: model.createCrewGrid(),
     );
   }
 }
+
+// Column(
+// children: [
+// Row(
+// children: [
+// Expanded(
+// child: Column(
+// crossAxisAlignment: CrossAxisAlignment.start,
+// children: [
+// Text(
+// 'Martin Scorsese',
+// style: peopleTextStyle,
+// ),
+// Text(
+// 'Director, Screenplay',
+// style: subtitleTextStyle,
+// ),
+// ],
+// ),
+// ),
+// Expanded(
+// child: Column(
+// crossAxisAlignment: CrossAxisAlignment.start,
+// children: [
+// Text(
+// 'David Grann',
+// style: peopleTextStyle,
+// ),
+// Text(
+// 'Novel',
+// style: subtitleTextStyle,
+// )
+// ],
+// ),
+// )
+// ],
+// ),
+// SizedBox(
+// height: 8,
+// ),
+// Row(
+// children: [
+// Column(
+// children: [
+// Text(
+// 'Eric Roth',
+// style: peopleTextStyle,
+// ),
+// Text(
+// 'Screenplay',
+// style: subtitleTextStyle,
+// ),
+// ],
+// )
+// ],
+// )
+// ],
+// ),
